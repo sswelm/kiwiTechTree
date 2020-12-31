@@ -46,14 +46,22 @@ namespace KiwiTechTree
         {
             if (childNode.tech.state == RDTech.State.Unavailable) return;
 
+            if (childNode.AnyParentToUnlock && childNode.parents.Any(p => p.tech.state == RDTech.State.Available))
+                return;
+
             foreach (ProtoRDNode parentNode in childNode.parents)
             {
                 if (parentNode.tech.state == RDTech.State.Available) continue;
 
-                parentNode.tech.state = RDTech.State.Available;
-                ResearchAndDevelopment.Instance.SetTechState(parentNode.tech.techID, parentNode.tech);
-                ResearchAndDevelopment.Instance.UnlockProtoTechNode(parentNode.tech);
+                Unlock(parentNode);
             }
+        }
+
+        private static void Unlock(ProtoRDNode techNode)
+        {
+            techNode.tech.state = RDTech.State.Available;
+            ResearchAndDevelopment.Instance.SetTechState(techNode.tech.techID, techNode.tech);
+            ResearchAndDevelopment.Instance.UnlockProtoTechNode(techNode.tech);
         }
     }
 }
